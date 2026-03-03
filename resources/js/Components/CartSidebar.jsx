@@ -86,8 +86,7 @@ export default function CartSidebar({
                         <div className="flex justify-between text-xs text-slate-400">
                             <span>Level ({selectedLevel.level_name})</span>
                             <span>
-                                + Rp{" "}
-                                {selectedLevel.extra_price.toLocaleString()}
+                                Rp {selectedLevel.extra_price.toLocaleString()}
                             </span>
                         </div>
                     )}
