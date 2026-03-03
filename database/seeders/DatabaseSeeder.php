@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\SpicyLevel;
 use App\Models\User;
 use Database\Seeders\UserSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -18,9 +19,10 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        $this->call(
-            UserSeeder::class
-            );
+        $this->call([
+            UserSeeder::class,
+            SpicyLevel::class,
+        ]);
 
         // User::factory()->create([
         //     'name' => 'Test User',

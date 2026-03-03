@@ -17,7 +17,7 @@ class PosController extends Controller
     public function index()
     {
         return Inertia::render('Cashier/Index', [
-            'products' => Product::where('is_active', true)->get(),
+            'products' => Product::with('category')->where('is_active', true)->get(),
             'categories' => Category::all(),
             'levels' => SpicyLevel::all(),
         ]);
@@ -27,18 +27,35 @@ class PosController extends Controller
     {
         $request->validate([
             'cart' => 'required|array|min:1',
-            'spicy_level_id' => 'required',
-            'payment_method' => 'required|string',
-            'amount_paid' => 'required|numeric',
+            'cart.*.id' => 'required|exists:products,id',
+            'cart.*.qty' => 'required|integer|min:1',
+            'cart.*.price' => 'required|numeric|min:0',
+            'spicy_level_id' => 'required|exists:spicy_levels,id',
+            'payment_method' => 'required|in:cash,qris',
+            'amount_paid' => 'required|numeric|min:' . $request->total_price,
+            'subtotal' => 'required|numeric|min:0',
+            'total_price' => 'required|numeric|min:0',
+        ], [
+            'amount_paid.min' => 'Jumlah bayar tidak boleh kurang dari total harga.'
         ]);
+
+        // Validate stock
+        foreach ($request->cart as $item) {
+            $product = Product::find($item['id']);
+            if ($product && $product->stock < $item['qty']) {
+                return redirect()->back()->with('error', "Stok {$product->name} tidak cukup (tersedia: {$product->stock})");
+            }
+        }
 
         return DB::transaction(function () use ($request) {
             $total_price = $request->total_price;
             $change_amount = $request->amount_paid - $total_price;
 
+            $invoiceNumber = 'INV-' . now()->format('YmdHis') . '-' . str_pad(random_int(1, 999), 3, '0', STR_PAD_LEFT);
+
             $transaction = Transaction::create([
                 'user_id' => Auth::id(),
-                'invoice_number' => 'INV-' . now()->format('YmdHis'),
+                'invoice_number' => $invoiceNumber,
                 'subtotal' => $request->subtotal,
                 'spicy_level_id' => $request->spicy_level_id,
                 'total_price' => $total_price,
@@ -56,6 +73,9 @@ class PosController extends Controller
                     'price_at_time' => $item['price'],
                     'subtotal' => $item['price'] * $item['qty'],
                 ]);
+
+                // Decrement stock
+                Product::where('id', $item['id'])->decrement('stock', $item['qty']);
             }
 
             return redirect()->back()->with('success', 'Transaksi Berhasil!');

@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class SpicyLevel extends Model
 {
     protected $fillable = ['level_name', 'extra_price'];
+
+    protected $casts = [
+    'extra_price' => 'integer',
+];
 }

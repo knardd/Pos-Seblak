@@ -29,7 +29,7 @@ export default function SpicyLevelSelector({
             {selectedLevel?.extra_price > 0 && (
                 <p className="text-[10px] text-orange-500 mt-2 font-bold italic">
                     * Tambahan biaya Rp{" "}
-                    {selectedLevel.extra_price.toLocaleString()}
+                    {Math.round(selectedLevel.extra_price).toLocaleString()}
                 </p>
             )}
         </div>

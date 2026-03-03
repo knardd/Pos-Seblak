@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Admin/Products/Index', [
+        return Inertia::render('Admin/Product', [
             'products' => Product::with('category')->latest()->get(),
             'categories' => Category::all()
         ]);
@@ -41,13 +41,23 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $product->update($request->only(['price', 'stock', 'is_active']));
-        return redirect()->back()->with('success', 'Produk berhasil diperbarui');
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'unit' => 'required|string',
+            'is_active' => 'required|boolean',
+        ]);
+
+        $product->update($validated);
+
+        return redirect()->back()->with('success', "Produk $product->name berhasil diperbarui");
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->back()->with('success', 'Produk berhasil dihapus');
+        return redirect()->back()->with('success', "$product->name berhasil dihapus");
     }
 }
