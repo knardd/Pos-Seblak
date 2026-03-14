@@ -1,43 +1,58 @@
 import React from "react";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 
 export default function CartItem({ item, onUpdateQty, onRemove }) {
     return (
-        <div className="flex items-center gap-3 py-2.5 border-b border-slate-100 last:border-0">
+        <div className="group relative flex items-center gap-2 py-2 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors px-1 -mx-1 rounded-lg">
             <div className="flex-1 min-w-0">
-                <p className="font-medium text-slate-700 text-xs truncate">
-                    {item.name}
-                </p>
-                <p className="text-xs text-blue-600 font-semibold">
-                    Rp {Math.round(item.price).toLocaleString()}
-                </p>
+                <div className="flex flex-col">
+                    <span className="font-bold text-gray-800 text-[10px] leading-tight truncate">
+                        {item.name}
+                    </span>
+                    <div className="flex items-center gap-1 mt-0.5">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">
+                            Rp {Math.round(item.price).toLocaleString("id-ID")}
+                        </span>
+                        <span className="text-[9px] font-black text-blue-600/60">
+                            × {item.qty}
+                        </span>
+                    </div>
+                </div>
             </div>
-            <div className="flex items-center gap-1 bg-slate-50 rounded-lg p-0.5">
-                <button
-                    onClick={() => onUpdateQty(item.id, -1)}
-                    className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-blue-100 rounded transition-colors"
-                >
-                    <Minus className="w-3 h-3" />
-                </button>
-                <span className="w-6 text-center font-bold text-xs text-slate-700">
-                    {item.qty}
-                </span>
-                <button
-                    onClick={() => onUpdateQty(item.id, 1)}
-                    className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-blue-100 rounded transition-colors"
-                >
-                    <Plus className="w-3 h-3" />
-                </button>
+            
+            <div className="flex items-center gap-1.5">
+                {/* Quantity Controls */}
+                <div className="flex items-center bg-white border border-gray-100 rounded-md overflow-hidden h-5 shadow-sm">
+                    <button
+                        onClick={() => onUpdateQty(item.id, -1)}
+                        className="w-4 h-full flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                    >
+                        <Minus className="w-2 h-2" />
+                    </button>
+                    <span className="w-4 text-center font-black text-[9px] text-gray-900 leading-none">
+                        {item.qty}
+                    </span>
+                    <button
+                        onClick={() => onUpdateQty(item.id, 1)}
+                        className="w-4 h-full flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                    >
+                        <Plus className="w-2 h-2" />
+                    </button>
+                </div>
+
+                {/* Total Price & Delete */}
+                <div className="flex flex-col items-end min-w-[45px]">
+                    <span className="font-black text-gray-900 text-[10px] tracking-tight">
+                        {Math.round(item.qty * item.price).toLocaleString("id-ID")}
+                    </span>
+                    <button
+                        onClick={() => onRemove(item.id)}
+                        className="text-[8px] font-black text-gray-300 hover:text-rose-500 transition-colors"
+                    >
+                        Hapus
+                    </button>
+                </div>
             </div>
-            <span className="font-bold text-slate-800 text-xs w-20 text-right">
-                Rp {Math.round(item.qty * item.price).toLocaleString()}
-            </span>
-            <button
-                onClick={() => onRemove(item.id)}
-                className="w-6 h-6 flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-            >
-                <X className="w-3 h-3" />
-            </button>
         </div>
     );
 }

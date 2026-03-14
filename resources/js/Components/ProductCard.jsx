@@ -2,45 +2,39 @@ import React from "react";
 import { Plus } from "lucide-react";
 
 export default function ProductCard({ product, onAdd }) {
-    const getBadge = (cat) => {
-        switch (cat?.toLowerCase()) {
-            case "topping":
-                return "bg-amber-100 text-amber-700";
-            case "frozen":
-                return "bg-sky-100 text-sky-700";
-            case "drink":
-                return "bg-emerald-100 text-emerald-700";
-            default:
-                return "bg-slate-100 text-slate-600";
-        }
-    };
-
     const categoryName = product.category?.name || product.category || "";
+    const isOutOfStock = product.stock <= 0;
 
     return (
         <button
+            disabled={isOutOfStock}
             onClick={() => onAdd(product)}
-            className="group relative bg-white rounded-xl border border-slate-200/80 hover:border-blue-400 hover:shadow-md hover:shadow-blue-500/8 transition-all duration-200 text-left p-4 flex flex-col justify-between h-[110px] active:scale-[0.97]"
+            className={`group relative bg-white rounded-xl border border-gray-100 transition-all text-left p-3 flex flex-col justify-between h-[100px] overflow-hidden ${
+                isOutOfStock
+                    ? "opacity-60 cursor-not-allowed grayscale"
+                    : "hover:border-blue-300 hover:shadow-sm hover:shadow-blue-50 active:scale-[0.98]"
+            }`}
         >
-            <div className="flex items-start justify-between gap-2">
-                <span className="font-semibold text-slate-700 text-sm leading-tight line-clamp-2">
-                    {product.name}
-                </span>
-                {categoryName && (
-                    <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${getBadge(categoryName)}`}
-                    >
-                        {categoryName}
+            <div className="space-y-1">
+                <div className="flex items-start justify-between gap-1.5">
+                    <span className="font-bold text-gray-800 text-[11px] leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {product.name}
                     </span>
-                )}
-            </div>
-            <div className="flex justify-between items-end">
-                <span className="text-sm font-bold text-blue-600">
-                    Rp {Math.round(product.price).toLocaleString()}
-                </span>
-                <div className="w-7 h-7 rounded-lg bg-blue-50 group-hover:bg-blue-500 flex items-center justify-center transition-all duration-200">
-                    <Plus className="w-3.5 h-3.5 text-blue-500 group-hover:text-white transition-colors" />
                 </div>
+            </div>
+
+            <div className="flex justify-between items-end">
+                <span className="text-[12px] font-black text-gray-900 tracking-tight">
+                    <span className="text-[9px] text-gray-400 mr-0.5 font-bold uppercase">
+                        Rp
+                    </span>
+                    {Math.round(product.price).toLocaleString("id-ID")}
+                </span>
+                {!isOutOfStock && (
+                    <div className="w-5 h-5 rounded-lg bg-gray-50 group-hover:bg-blue-600 flex items-center justify-center transition-all border border-gray-100 group-hover:border-blue-600">
+                        <Plus className="w-3 h-3 text-gray-400 group-hover:text-white transition-colors" />
+                    </div>
+                )}
             </div>
         </button>
     );

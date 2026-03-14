@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Inventory;
+use App\Models\InventoryLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -12,7 +16,7 @@ class ProductController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Product', [
-            'products' => Product::with('category')->latest()->get(),
+            'products' => Product::with(['category'])->latest()->get(),
             'categories' => Category::all()
         ]);
     }
@@ -26,18 +30,32 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'unit' => 'required|string',
+            'cost_price' => 'required|numeric|min:0',
             'is_active' => 'required|boolean',
         ]);
 
-        Product::create($validated);
+        DB::transaction(function() use ($validated) {
+            $product = Product::create([
+                'category_id' => $validated['category_id'],
+                'name' => $validated['name'],
+                'price' => $validated['price'],
+                'cost_price' => $validated['cost_price'],
+                'is_active' => $validated['is_active'],
+            ]);
+
+            // Create initial empty inventory
+            Inventory::create([
+                'product_id' => $product->id,
+                'stock' => 0,
+                'unit' => 'pcs',
+            ]);
+        });
 
         return redirect()->back()->with('success', 'Produk berhasil ditambahkan');
     }
 
     /**
-     * Memperbarui status aktif/stok secara cepat
+     * Memperbarui informasi produk
      */
     public function update(Request $request, Product $product)
     {
@@ -45,8 +63,7 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'unit' => 'required|string',
+            'cost_price' => 'required|numeric|min:0',
             'is_active' => 'required|boolean',
         ]);
 

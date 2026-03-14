@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\SpicyLevel;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\InventoryLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,12 @@ class PosController extends Controller
     public function index()
     {
         return Inertia::render('Cashier/Index', [
-            'products' => Product::with('category')->where('is_active', true)->get(),
+            'products' => Product::with(['category', 'inventory'])->where('is_active', true)->get()->map(function($product) {
+                // Flatten inventory for easier frontend access if needed
+                $product->stock = $product->inventory->stock ?? 0;
+                $product->unit = $product->inventory->unit ?? 'pcs';
+                return $product;
+            }),
             'categories' => Category::all(),
             'levels' => SpicyLevel::all(),
         ]);
@@ -41,9 +47,9 @@ class PosController extends Controller
 
         // Validate stock
         foreach ($request->cart as $item) {
-            $product = Product::find($item['id']);
-            if ($product && $product->stock < $item['qty']) {
-                return redirect()->back()->with('error', "Stok {$product->name} tidak cukup (tersedia: {$product->stock})");
+            $product = Product::with('inventory')->find($item['id']);
+            if (!$product->inventory || $product->inventory->stock < $item['qty']) {
+                return redirect()->back()->with('error', "Stok {$product->name} tidak cukup (tersedia: " . ($product->inventory->stock ?? 0) . ")");
             }
         }
 
@@ -74,8 +80,19 @@ class PosController extends Controller
                     'subtotal' => $item['price'] * $item['qty'],
                 ]);
 
-                // Decrement stock
-                Product::where('id', $item['id'])->decrement('stock', $item['qty']);
+                // Decrement stock in inventories table
+                $product = Product::find($item['id']);
+                $inventory = $product->inventory;
+                $inventory->decrement('stock', $item['qty']);
+
+                // Log the inventory change
+                InventoryLog::create([
+                    'inventory_id' => $inventory->id,
+                    'user_id' => Auth::id(),
+                    'type' => 'out',
+                    'quantity' => -$item['qty'],
+                    'note' => "Penjualan: " . $invoiceNumber
+                ]);
             }
 
             return redirect()->back()->with('success', 'Transaksi Berhasil!');

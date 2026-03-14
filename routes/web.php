@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CreateCashierController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -48,9 +49,25 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::post('/admin/cashier', [CreateCashierController::class, 'store'])->name('cashier.store');
     Route::put('/admin/cashier/{user}', [CreateCashierController::class, 'update'])->name('cashier.update');
     Route::delete('/admin/cashier/{user}', [CreateCashierController::class, 'destroy'])->name('cashier.destroy');
+
+    Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
+    Route::delete('/admin/order/{transaction}', [OrderController::class, 'destroy'])->name('order.destroy');
+
+    Route::get('/admin/inventory/logs', [\App\Http\Controllers\InventoryController::class, 'logs'])->name('inventory.logs');
+    Route::get('/admin/inventory/stock', [\App\Http\Controllers\StockManagementController::class, 'index'])->name('inventory.stock.index');
+    Route::put('/admin/inventory/stock/{inventory}', [\App\Http\Controllers\StockManagementController::class, 'update'])->name('inventory.stock.update');
+
+    Route::get('/admin/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
+    Route::delete('/admin/expense/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expense.destroy');
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/expense', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('expense.index');
+    Route::post('/admin/expense', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('expense.store');
+    
+    Route::get('/admin/closing', [\App\Http\Controllers\CashierClosingController::class, 'index'])->name('closing.index');
+    Route::post('/admin/closing', [\App\Http\Controllers\CashierClosingController::class, 'store'])->name('closing.store');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

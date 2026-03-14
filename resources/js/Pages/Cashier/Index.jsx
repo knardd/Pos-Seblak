@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { router, usePage } from "@inertiajs/react";
+import { Soup } from "lucide-react";
 import Alert from "@/Components/Alert";
 import TopBar from "@/Components/TopBar";
 import CategoryTabs from "@/Components/CategoryTabs";
@@ -21,6 +22,7 @@ export default function App({ products = [], categories = [], levels = [] }) {
     // State Payment Modal
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showSuccessScreen, setShowSuccessScreen] = useState(false);
+    const [lastTransaction, setLastTransaction] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState("cash");
     const [amountPaid, setAmountPaid] = useState("");
 
@@ -84,6 +86,14 @@ export default function App({ products = [], categories = [], levels = [] }) {
         router.post(route("pos.store"), payload, {
             preserveScroll: true,
             onSuccess: () => {
+                setLastTransaction({
+                    cart: [...cart],
+                    total,
+                    amountPaid: payload.amount_paid,
+                    changeAmount,
+                    selectedLevel,
+                    paymentMethod: payload.payment_method
+                });
                 setProcessing(false);
                 setShowPaymentModal(false);
                 setShowSuccessScreen(true);
@@ -99,9 +109,9 @@ export default function App({ products = [], categories = [], levels = [] }) {
     const cartCount = cart.reduce((a, i) => a + i.qty, 0);
 
     return (
-        <div className="flex h-screen w-full bg-slate-100 overflow-hidden font-sans">
+        <div className="flex h-screen w-full bg-[#fdfdfd] overflow-hidden font-sans selection:bg-blue-100 selection:text-blue-700">
             {/* ====== LEFT: Product Area ====== */}
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden relative border-r border-gray-100/60">
                 <TopBar
                     search={search}
                     onSearchChange={setSearch}
@@ -110,28 +120,33 @@ export default function App({ products = [], categories = [], levels = [] }) {
 
                 <Alert type="error" message={flash?.error} />
 
-                <CategoryTabs
-                    categories={categories}
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                />
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    <CategoryTabs
+                        categories={categories}
+                        activeTab={activeTab}
+                        onTabChange={setActiveTab}
+                    />
 
-                {/* Product Grid */}
-                <div className="flex-1 overflow-y-auto px-6 py-3 custom-scrollbar">
-                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                        {filteredProducts.map((product) => (
-                            <ProductCard
-                                key={product.id}
-                                product={product}
-                                onAdd={handleAddToCart}
-                            />
-                        ))}
-                    </div>
-                    {filteredProducts.length === 0 && (
-                        <div className="text-center py-20 text-slate-400 italic text-sm">
-                            Produk tidak ditemukan...
+                    {/* Product Grid */}
+                    <div className="flex-1 overflow-y-auto px-3 py-3 custom-scrollbar bg-slate-50/30">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2.5">
+                            {filteredProducts.map((product) => (
+                                <ProductCard
+                                    key={product.id}
+                                    product={product}
+                                    onAdd={handleAddToCart}
+                                />
+                            ))}
                         </div>
-                    )}
+                        {filteredProducts.length === 0 && (
+                            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                                <div className="w-12 h-12 bg-gray-50/50 rounded-xl flex items-center justify-center mb-3 border border-gray-100">
+                                    <Soup className="w-6 h-6 text-gray-200" />
+                                </div>
+                                <span className="text-[11px] font-bold tracking-tight text-gray-500">Menu tidak ditemukan</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -168,18 +183,14 @@ export default function App({ products = [], categories = [], levels = [] }) {
             <SuccessScreen
                 isOpen={showSuccessScreen}
                 onClose={() => setShowSuccessScreen(false)}
+                transactionData={lastTransaction}
             />
 
             <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .scrollbar-hide::-webkit-scrollbar { display: none; }
-                @keyframes scale-in {
-                    0% { transform: scale(0.5); opacity: 0; }
-                    100% { transform: scale(1); opacity: 1; }
-                }
-                .scale-in-center { animation: scale-in 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both; }
             `}</style>
         </div>
     );
