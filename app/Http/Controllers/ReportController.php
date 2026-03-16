@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\SpicyLevel;
+use App\Exports\TransactionsExport;
+use App\Exports\ExpensesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +15,26 @@ use Inertia\Inertia;
 
 class ReportController extends Controller
 {
+    public function exportTransactions(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        
+        $filename = 'laporan-penjualan-' . now()->format('Y-m-d') . '.xlsx';
+        
+        return Excel::download(new TransactionsExport($startDate, $endDate), $filename);
+    }
+
+    public function exportExpenses(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        
+        $filename = 'laporan-pengeluaran-' . now()->format('Y-m-d') . '.xlsx';
+        
+        return Excel::download(new ExpensesExport($startDate, $endDate), $filename);
+    }
+
     public function index(Request $request)
     {
         $startDate = $request->filled('start_date') ? Carbon::parse($request->start_date)->startOfDay() : Carbon::now()->subDays(30)->startOfDay();

@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { Link, usePage, useForm, router } from "@inertiajs/react";
-import { Search, LogOut, LayoutDashboard, ChevronDown, Info, Soup } from "lucide-react";
+import {
+    Search,
+    LogOut,
+    LayoutDashboard,
+    ChevronDown,
+    Info,
+    Utensils,
+} from "lucide-react";
 import Dropdown from "@/Components/Dropdown";
 import Modal from "@/Components/Modal";
 
-export default function TopBar({ search, onSearchChange, isAdmin }) {
+export default function TopBar({ search, onSearchChange, isAdmin, expectedCash = 0 }) {
     const { auth } = usePage().props;
     const [showClosingModal, setShowClosingModal] = useState(false);
 
@@ -12,6 +19,8 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
         total_cash_reported: "",
         notes: "",
     });
+
+    const difference = data.total_cash_reported ? Number(data.total_cash_reported) - expectedCash : 0;
 
     const handleLogoutClick = (e) => {
         if (auth?.user?.role === "cashier") {
@@ -24,7 +33,6 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
         e.preventDefault();
         post(route("closing.store"), {
             onSuccess: () => {
-                setShowClosingModal(false);
                 reset();
                 router.post(route("logout"));
             },
@@ -36,7 +44,7 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
             {/* LEFT SIDE: LOGO */}
             <div className="flex items-center gap-2">
                 <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition-colors">
-                    <Soup className="w-4 h-4" />
+                    <Utensils className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
                     <h1 className="text-[13px] font-bold tracking-tight leading-none text-gray-900">
@@ -128,11 +136,16 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
             </div>
 
             {/* Closing Modal */}
-            <Modal show={showClosingModal} onClose={() => setShowClosingModal(false)}>
+            <Modal
+                show={showClosingModal}
+                onClose={() => setShowClosingModal(false)}
+            >
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-lg font-bold text-gray-900">Konfirmasi Tutup Kasir</h2>
-                        <button 
+                        <h2 className="text-lg font-bold text-gray-900">
+                            Konfirmasi Tutup Kasir
+                        </h2>
+                        <button
                             onClick={() => setShowClosingModal(false)}
                             className="text-gray-400 hover:text-gray-500 transition-colors"
                         >
@@ -141,7 +154,22 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
                     </div>
 
                     <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-                        <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                        <div className="flex flex-col gap-3 p-4 bg-blue-50/50 rounded-2xl border border-blue-100/50">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Saldo Tunai Sistem</span>
+                                <span className="text-sm font-black text-blue-700">Rp {expectedCash.toLocaleString('id-ID')}</span>
+                            </div>
+                            {data.total_cash_reported && (
+                                <div className="flex justify-between items-center pt-2 border-t border-blue-100">
+                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Selisih (Fisik - Sistem)</span>
+                                    <span className={`text-sm font-black ${difference === 0 ? 'text-green-600' : difference > 0 ? 'text-amber-600' : 'text-rose-600'}`}>
+                                        {difference > 0 ? '+' : ''} Rp {difference.toLocaleString('id-ID')}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2 pt-2">
                             <Info size={16} className="text-blue-500" />
                             Input Uang Fisik
                         </h3>
@@ -156,7 +184,12 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
                                     placeholder="0"
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                                     value={data.total_cash_reported}
-                                    onChange={(e) => setData("total_cash_reported", e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            "total_cash_reported",
+                                            e.target.value,
+                                        )
+                                    }
                                     required
                                 />
                                 {errors.total_cash_reported && (
@@ -174,7 +207,9 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
                                     placeholder="Misal: Kurang Rp 500 karena tidak ada kembalian"
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all h-24 resize-none"
                                     value={data.notes}
-                                    onChange={(e) => setData("notes", e.target.value)}
+                                    onChange={(e) =>
+                                        setData("notes", e.target.value)
+                                    }
                                 />
                             </div>
 
@@ -191,7 +226,9 @@ export default function TopBar({ search, onSearchChange, isAdmin }) {
                                     disabled={processing}
                                     className="flex-[2] py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all disabled:bg-blue-300"
                                 >
-                                    {processing ? "Menyimpan..." : "Selesaikan & Keluar"}
+                                    {processing
+                                        ? "Menyimpan..."
+                                        : "Selesaikan & Keluar"}
                                 </button>
                             </div>
                         </form>

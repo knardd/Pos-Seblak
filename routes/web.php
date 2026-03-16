@@ -58,6 +58,8 @@ Route::middleware('auth', 'role:admin')->group(function () {
     Route::put('/admin/inventory/stock/{inventory}', [\App\Http\Controllers\StockManagementController::class, 'update'])->name('inventory.stock.update');
 
     Route::get('/admin/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
+    Route::get('/admin/reports/export/transactions', [\App\Http\Controllers\ReportController::class, 'exportTransactions'])->name('report.export.transactions');
+    Route::get('/admin/reports/export/expenses', [\App\Http\Controllers\ReportController::class, 'exportExpenses'])->name('report.export.expenses');
     Route::delete('/admin/expense/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expense.destroy');
 });
 

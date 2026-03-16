@@ -8,6 +8,8 @@ use App\Models\SpicyLevel;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\InventoryLog;
+use App\Models\Expense;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,21 @@ class PosController extends Controller
 {
     public function index()
     {
+        $today = Carbon::today();
+        
+        // Calculate expected cash in drawer (Cash Sales - Expenses)
+        $cashSales = Transaction::whereDate('created_at', $today)
+            ->where('status', 'completed')
+            ->where('payment_method', 'cash')
+            ->sum('total_price');
+
+        $cashExpenses = Expense::whereDate('date', $today)
+            ->sum('amount');
+
+        $expectedCash = $cashSales - $cashExpenses;
+
         return Inertia::render('Cashier/Index', [
+            'expectedCash' => (float) $expectedCash,
             'products' => Product::with(['category', 'inventory'])->where('is_active', true)->get()->map(function($product) {
                 // Flatten inventory for easier frontend access if needed
                 $product->stock = $product->inventory->stock ?? 0;

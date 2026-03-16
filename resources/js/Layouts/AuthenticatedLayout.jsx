@@ -42,7 +42,6 @@ export default function AuthenticatedLayout({ header, children }) {
         e.preventDefault();
         post(route("closing.store"), {
             onSuccess: () => {
-                setShowClosingModal(false);
                 reset();
                 router.post(route("logout"));
             },

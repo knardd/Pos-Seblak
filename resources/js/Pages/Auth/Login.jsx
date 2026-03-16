@@ -5,9 +5,12 @@ import { Head, useForm } from "@inertiajs/react";
 import {
     User as UserIcon,
     Lock as LockIcon,
-    Utensils as SoupIcon,
+    Utensils,
     ArrowRight,
     CheckCircle2,
+    TrendingUp,
+    Package,
+    ShieldCheck,
 } from "lucide-react";
 
 export default function Login({ status }) {
@@ -26,63 +29,110 @@ export default function Login({ status }) {
     return (
         <div className="min-h-screen w-full flex bg-[#f8fafc] font-sans selection:bg-blue-100 selection:text-blue-700 overflow-hidden">
             <Head title="Log in" />
-
             {/* LEFT SIDE: DECORATIVE */}
-            <div className="hidden lg:flex lg:w-1/2 bg-blue-600 relative overflow-hidden items-center justify-center p-12 m-4 rounded-3xl">
-                {/* Background Patterns */}
-                <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                    <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full border-[40px] border-white"></div>
-                    <div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full border-[20px] border-white"></div>
+            <div
+                className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-11 m-4 rounded-3xl"
+                style={{
+                    background: "#1447C2",
+                    minHeight: "520px",
+                    fontFamily: "'DM Sans', sans-serif",
+                }}
+            >
+                {/* Dot grid texture */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        backgroundImage:
+                            "radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px)",
+                        backgroundSize: "28px 28px",
+                    }}
+                />
+
+                {/* TOP ROW: logo + badge */}
+                <div className="relative z-10 flex items-start justify-between">
+                    <div
+                        className="w-13 h-13 rounded-2xl flex items-center justify-center"
+                        style={{
+                            background: "rgba(255,255,255,0.12)",
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            width: 52,
+                            height: 52,
+                        }}
+                    >
+                        <Utensils size={22} className="text-white" />
+                    </div>
+                    <div
+                        className="px-4 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
+                        style={{
+                            background: "rgba(255,255,255,0.1)",
+                            border: "1px solid rgba(255,255,255,0.18)",
+                            color: "rgba(255,255,255,0.75)",
+                        }}
+                    >
+                        Point of Sales · 2026
+                    </div>
                 </div>
 
-                <div className="relative z-10 text-center space-y-8 max-w-md animate-in fade-in slide-in-from-left duration-700">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl mb-4 group hover:scale-110 transition-transform duration-500">
-                        <SoupIcon
-                            size={40}
-                            className="text-white group-hover:rotate-12 transition-transform"
+                {/* MID: headline */}
+                <div className="relative z-10 flex-1 flex flex-col justify-center py-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div
+                            className="h-[1.5px] w-5"
+                            style={{ background: "rgba(255,255,255,0.35)" }}
                         />
+                        <span
+                            className="text-[11px] font-medium tracking-[.12em] uppercase"
+                            style={{ color: "rgba(255,255,255,0.5)" }}
+                        >
+                            Seblakku POS System
+                        </span>
                     </div>
 
-                    <div className="space-y-4">
-                        <h1 className="text-5xl font-black text-white tracking-tighter uppercase italic">
-                            SEBLAK<span className="text-blue-200">KU</span>
-                        </h1>
-                        <p className="text-blue-100 text-lg font-medium leading-relaxed">
-                            Aplikasi Point of Sales modern untuk bisnis kuliner
-                            Seblak. Kelola pesanan, stok, dan laporan dalam satu
-                            tempat.
-                        </p>
-                    </div>
+                    <h1
+                        className="font-black leading-none tracking-tight mb-5 text-white"
+                        style={{
+                            fontFamily: "'Sora', sans-serif",
+                            fontSize: 52,
+                        }}
+                    >
+                        Satu
+                        <br />
+                        Tempat,
+                        <br />
+                        <span
+                            style={{
+                                color: "rgba(255,255,255,0.4)",
+                                fontStyle: "italic",
+                            }}
+                        >
+                            Semua
+                        </span>
+                        <br />
+                        Terkendali.
+                    </h1>
 
-                    <div className="pt-8 grid grid-cols-3 gap-4">
-                        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-                            <p className="text-white font-black text-lg">
-                                Fast
-                            </p>
-                            <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest">
-                                Orders
-                            </p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-                            <p className="text-white font-black text-lg">
-                                Easy
-                            </p>
-                            <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest">
-                                Inventory
-                            </p>
-                        </div>
-                        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-                            <p className="text-white font-black text-lg">
-                                Secure
-                            </p>
-                            <p className="text-blue-200 text-[10px] font-bold uppercase tracking-widest">
-                                Reporting
-                            </p>
-                        </div>
-                    </div>
+                    <div
+                        className="w-10 h-0.5 rounded mb-5"
+                        style={{ background: "rgba(255,255,255,0.2)" }}
+                    />
+
+                    <p
+                        className="text-sm leading-relaxed max-w-[310px]"
+                        style={{ color: "rgba(255,255,255,0.55)" }}
+                    >
+                        Kelola{" "}
+                        <span
+                            style={{
+                                color: "rgba(255,255,255,0.85)",
+                                fontWeight: 500,
+                            }}
+                        >
+                            pesanan, stok, dan laporan
+                        </span>{" "}
+                        bisnis kuliner seblakmu dengan lebih cepat dan akurat.
+                    </p>
                 </div>
-            </div>
-
+            </div>{" "}
             {/* RIGHT SIDE: LOGIN FORM */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative">
                 {/* Mobile Decorative Header */}
@@ -92,7 +142,7 @@ export default function Login({ status }) {
                     {/* Brand Logo for Mobile */}
                     <div className="lg:hidden flex justify-center mb-8">
                         <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center text-blue-600">
-                            <SoupIcon size={32} />
+                            <Utensils size={32} />
                         </div>
                     </div>
 
@@ -117,7 +167,7 @@ export default function Login({ status }) {
                             <div>
                                 <InputLabel
                                     htmlFor="name"
-                                    value="Username Petugas"
+                                    value="Username"
                                     className="text-gray-500 font-black text-[10px] uppercase tracking-widest mb-1.5 ml-1"
                                 />
 
@@ -185,7 +235,7 @@ export default function Login({ status }) {
                             {processing ? (
                                 <span className="inline-block animate-spin h-5 w-5 border-[3px] border-white border-t-transparent rounded-full"></span>
                             ) : (
-                                <>Masuk ke Sistem</>
+                                <>Masuk</>
                             )}
                         </button>
                     </form>

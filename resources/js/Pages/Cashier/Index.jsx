@@ -9,13 +9,13 @@ import CartSidebar from "@/Components/CartSidebar";
 import PaymentModal from "@/Components/PaymentModal";
 import SuccessScreen from "@/Components/SuccessScreen";
 
-export default function App({ products = [], categories = [], levels = [] }) {
+export default function App({ products = [], categories = [], levels = [], expectedCash = 0 }) {
     const { flash = {}, auth } = usePage().props;
     const isAdmin = auth?.user?.role === "admin";
 
     const [activeTab, setActiveTab] = useState("all");
     const [cart, setCart] = useState([]);
-    const [selectedLevel, setSelectedLevel] = useState(levels[0] || null);
+    const [selectedLevel, setSelectedLevel] = useState(null);
     const [search, setSearch] = useState("");
     const [processing, setProcessing] = useState(false);
 
@@ -98,6 +98,7 @@ export default function App({ products = [], categories = [], levels = [] }) {
                 setShowPaymentModal(false);
                 setShowSuccessScreen(true);
                 setCart([]);
+                setSelectedLevel(null);
                 setAmountPaid("");
             },
             onError: () => {
@@ -116,6 +117,7 @@ export default function App({ products = [], categories = [], levels = [] }) {
                     search={search}
                     onSearchChange={setSearch}
                     isAdmin={isAdmin}
+                    expectedCash={expectedCash}
                 />
 
                 <Alert type="error" message={flash?.error} />
@@ -158,7 +160,10 @@ export default function App({ products = [], categories = [], levels = [] }) {
                 onLevelChange={setSelectedLevel}
                 onUpdateQty={handleUpdateQty}
                 onRemove={handleRemoveFromCart}
-                onResetCart={() => setCart([])}
+                onResetCart={() => {
+                    setCart([]);
+                    setSelectedLevel(null);
+                }}
                 onPayClick={() => setShowPaymentModal(true)}
                 subtotal={subtotal}
                 total={total}

@@ -70,7 +70,7 @@ export default function ReportIndex({
 
             <div className="p-4 max-w-7xl mx-auto space-y-6">
                 {/* HEADER & FILTERS */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="flex flex-col md:flex-col justify-between gap-4">
                     <div>
                         <div className="flex items-center gap-3 mb-1">
                             <div className="p-2.5 bg-blue-600 rounded-xl shadow-sm text-white">
@@ -108,6 +108,7 @@ export default function ReportIndex({
                                 />
                             </div>
                         </div>
+
                         <div className="space-y-1">
                             <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
                                 Selesai
@@ -125,12 +126,36 @@ export default function ReportIndex({
                                 />
                             </div>
                         </div>
+
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-sm"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-all shadow-sm h-[34px]"
                         >
                             Terapkan
                         </button>
+
+                        <div className="flex gap-2 h-[34px]">
+                            <a
+                                href={route("report.export.transactions", {
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                })}
+                                className="flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition-all shadow-sm"
+                            >
+                                <FileText size={14} />
+                                Export Penjualan
+                            </a>
+                            <a
+                                href={route("report.export.expenses", {
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                })}
+                                className="flex items-center gap-1.5 px-3 py-1 bg-orange-600 text-white rounded-lg text-[11px] font-bold hover:bg-orange-700 transition-all shadow-sm"
+                            >
+                                <FileText size={14} />
+                                Export Pengeluaran
+                            </a>
+                        </div>
                     </form>
                 </div>
 
@@ -141,7 +166,7 @@ export default function ReportIndex({
                             <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
                                 <DollarSign size={20} />
                             </div>
-                            <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full uppercase">
+                            <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
                                 Omzet
                             </span>
                         </div>

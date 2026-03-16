@@ -19,7 +19,7 @@ export default function CartItem({ item, onUpdateQty, onRemove }) {
                     </div>
                 </div>
             </div>
-            
+
             <div className="flex items-center gap-1.5">
                 {/* Quantity Controls */}
                 <div className="flex items-center bg-white border border-gray-100 rounded-md overflow-hidden h-5 shadow-sm">
@@ -39,19 +39,25 @@ export default function CartItem({ item, onUpdateQty, onRemove }) {
                         <Plus className="w-2 h-2" />
                     </button>
                 </div>
-
                 {/* Total Price & Delete */}
-                <div className="flex flex-col items-end min-w-[45px]">
-                    <span className="font-black text-gray-900 text-[10px] tracking-tight">
-                        {Math.round(item.qty * item.price).toLocaleString("id-ID")}
+                <div className="flex items-center gap-2 min-w-[60px] justify-end">
+                    <span className="font-black text-gray-900 text-[10px] tracking-tight leading-none">
+                        {Math.round(item.qty * item.price).toLocaleString(
+                            "id-ID",
+                        )}
                     </span>
                     <button
                         onClick={() => onRemove(item.id)}
-                        className="text-[8px] font-black text-gray-300 hover:text-rose-500 transition-colors"
+                        className="p-1 text-rose-500 hover:bg-rose-50 rounded-md transition-colors group"
+                        title="Hapus item"
                     >
-                        Hapus
+                        <Trash2
+                            size={14}
+                            strokeWidth={2.5}
+                            className="shrink-0"
+                        />
                     </button>
-                </div>
+                </div>{" "}
             </div>
         </div>
     );
